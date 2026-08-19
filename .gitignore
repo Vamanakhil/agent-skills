@@ -1,0 +1,15 @@
+# macOS
+.DS_Store
+
+# Logs and temp
+*.log
+*.tmp
+
+# Local Claude / opencode state
+.claude/
+.opencode/
+
+# Editor
+.vscode/
+.idea/
+*.swp
