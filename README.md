@@ -34,11 +34,14 @@ opencode and Claude Code load globally — on every project.
 
 ## Install
 
+**One-liner (recommended):**
+
 ```bash
-git clone git@github.com:Vamanakhil/agent-skills.git
-cd agent-skills
-./install.sh
+curl -fsSL https://raw.githubusercontent.com/Vamanakhil/agent-skills/main/install-remote.sh | bash
 ```
+
+That's it. It clones the repo (or updates it if you already have it) and
+symlinks every skill into `~/.claude/skills/`.
 
 What it does:
 
@@ -48,6 +51,17 @@ What it does:
 
 Verify with opencode's `/skills` or Claude Code's `/skills` — you should see
 `klean` listed.
+
+> Want it installed somewhere else? Set `AGENT_SKILLS_DIR`:
+> `AGENT_SKILLS_DIR=~/.agent-skills curl -fsSL <url> | bash`
+
+### Alternative: clone & run
+
+```bash
+git clone git@github.com:Vamanakhil/agent-skills.git
+cd agent-skills
+./install.sh
+```
 
 ### Installer options
 
