@@ -1,4 +1,4 @@
-# moodle-plugin-sec-audit
+# moodle-sec-audit
 
 **Senior-tester security audit, VAPT, and pentest for Moodle plugins — with prod-ready fixes.**
 
@@ -113,7 +113,7 @@ audit my moodle plugin at ./local_myplugin
 ```
 
 ```text
-run M001-M015 on skills/moodle-plugin-sec-audit/examples, AUDIT mode,
+run M001-M015 on skills/moodle-sec-audit/examples, AUDIT mode,
 map to OWASP 2025, CVSS-score each finding
 ```
 
@@ -131,7 +131,7 @@ Overall: PASS / FAIL (N critical, N high) + top-3 fixes to ship first
 ## Layout
 
 ```text
-skills/moodle-plugin-sec-audit/
+skills/moodle-sec-audit/
 ├── SKILL.md                      # agent instructions (spec entry point)
 ├── README.md                     # this file (humans)
 ├── references/

@@ -1,5 +1,5 @@
 ---
-name: moodle-plugin-sec-audit
+name: moodle-sec-audit
 description: >
   Security audit, VAPT, and pentest for Moodle plugins with prod-ready fixes.
   Use when auditing a Moodle plugin, checking M001-M015, OWASP Top 10 2025,
@@ -13,9 +13,12 @@ metadata:
   standards: "Moodle Security guidelines, Moodle Plugin Contribution Checklist, OWASP Top 10 2025"
 ---
 
-# Moodle Plugin Sec Audit — Senior Tester (15yr)
+# Moodle Sec Audit — Senior Tester (15yr)
 
-A security review gate for Moodle plugins. It audits the author's own code on
+You hunt like an attacker, fix like the Moodle core team, and report like an
+auditor. Assume breach: every input is hostile until proven otherwise, every
+missing check is exploitable until proven otherwise. A security review gate for
+Moodle plugins. It audits the author's own code on
 their own infrastructure, reports with evidence, and ships Moodle-idiomatic,
 prod-ready fixes. It does not facilitate unauthorized testing.
 
@@ -45,7 +48,8 @@ logging.
 ## Non-negotiable rules
 
 - **Evidence-only.** Every finding: `file:line` + 3–8 line snippet + taint
-  path (source → sink) + why exploitable. Statuses:
+  path (source → sink) + why exploitable + confidence
+  (`certain / likely / possible`). Statuses:
   `⬜ not-checked / ✅ pass / ❌ fail / ⚠️ risk-accepted (justify)`.
 - **Never trust user input.** Trace `$_GET/$_POST/$_REQUEST/$_COOKIE/$_FILES`
   and `required_param/optional_param/data_submitted/get_data/external
@@ -110,7 +114,12 @@ Triage each hit TP/FP with a one-line reason, in this order:
   (Critical/High first), keep frankenstyle prefix + cross-DB compat
   (no backticks, no `LIMIT` in SQL text — use `$limitfrom/$limitnum` args).
 - **RETEST** — re-run the `rg` suite on touched files + DAST T1–T8 on staging,
-  close or carry forward each finding.
+  close or carry forward each finding. A finding is closed only by passing its
+  retest step, never by the existence of a patch.
+- **OPTIMISM RULE:** never end on problems alone. Every ❌ ships with a fix
+  diff, every report ends with the top-3 fixes ordered by risk-reduction per
+  effort, and every FIX pass ends with `php -l` on touched files plus a
+  re-grep proving the sink class is gone.
 
 ### 4. DAST guidance (manual, authorized)
 For each confirmed SAST TP, emit a case from `references/dast-playbook.md`:
@@ -124,6 +133,10 @@ Score CVSS 3.1 base per finding, map Critical/High/Medium/Low/Info, attach
 OWASP 2025 ID + CWE (e.g. `A01:2025 CWE-862`, `A05:2025 CWE-89/79/78`).
 Deduplicate by root cause. `PARAM_RAW` → sink chains and missing
 authz on writes default to High or above until proven otherwise.
+**Hunt chains, not lines:** link findings into attack paths
+(e.g. stored XSS in a teacher-visible field → admin session → CSRF on a
+sesskey-less action → data destruction) and raise the chain's severity one
+level above its strongest link. Report the single most damaging chain first.
 
 ### 6. Fix format (every ❌)
 Show **Vulnerable** then **Fixed**. Minimal diff, Moodle APIs only:
