@@ -5,12 +5,11 @@
 **Portable Agent Skills for opencode & Claude Code**
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![opencode](https://img.shields.io/badge/opencode-compatible-000000.svg?logo=opencode)](https://opencode.ai)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-D97757.svg?logo=anthropic)](https://claude.com/claude-code)
+[![opencode](https://img.shields.io/badge/opencode-compatible-000000.svg)](https://opencode.ai)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-compatible-D97757.svg)](https://claude.com/claude-code)
 [![CI](https://github.com/Vamanakhil/agent-skills/actions/workflows/validate.yml/badge.svg)](https://github.com/Vamanakhil/agent-skills/actions/workflows/validate.yml)
 
-One source of truth for reusable skills, installable globally so every project
-gains them in **both** opencode and Claude Code.
+The skills I actually use, kept in one place so every project gets them.
 
 </div>
 
@@ -18,45 +17,37 @@ gains them in **both** opencode and Claude Code.
 
 ## What is this?
 
-A collection of high-quality [Agent Skills](https://agentskills.io) — folders
-with a `SKILL.md` that teach coding agents how to do a specific job well.
-Skills live in `skills/`, are validated in CI, and install with one command.
+Each skill is a folder with a `SKILL.md` file that teaches a coding agent how
+to do one job well. This repo collects mine. Installing symlinks every skill
+into `~/.claude/skills/`, which both opencode and Claude Code read — so once
+installed, the skills work in every project on the machine, with no per-project
+setup.
 
-Every skill follows the open Agent Skills spec, so a single skill works across
-tools. Installing creates a **symlink** in `~/.claude/skills/`, which both
-opencode and Claude Code load globally — on every project.
+Skills live in `skills/`. Everything is validated by `scripts/validate.sh`,
+which also runs in CI on every push.
 
 ## Skills
 
-| Skill | Description |
+| Skill | What it does |
 |---|---|
-| [klean](skills/klean/SKILL.md) | **Website Quality Engineer.** Review, design, and production-harden websites so they feel intentional, product-specific, accessible, fast, trustworthy, and secure — not statistically generic AI-generated UI. |
-| [moodle-sec-audit](skills/moodle-sec-audit/SKILL.md) | **Moodle Plugin Security Audit + VAPT.** Senior-tester audit of Moodle plugins against M001–M015 and OWASP Top 10 2025, with evidence-backed report and prod-ready fixes. |
+| [klean](skills/klean/SKILL.md) | Website quality gate. Reviews, redesigns, and hardens sites for launch across design, accessibility, performance, SEO, security, and reliability. |
+| [moodle-sec-audit](skills/moodle-sec-audit/SKILL.md) | Security audit and VAPT for Moodle plugins. Checks the M001–M015 checklist, maps findings to OWASP Top 10 2025, and returns an evidence-backed report with prod-ready fixes. |
 
 ## Install
 
-**One-liner (recommended):**
+**New machine, one line:**
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/Vamanakhil/agent-skills/main/install-remote.sh | bash
 ```
 
-That's it. It clones the repo (or updates it if you already have it) and
-symlinks every skill into `~/.claude/skills/`.
+That clones this repo to `~/Projects/Skills` (or `$AGENT_SKILLS_DIR` if you set
+it) and runs the local installer. Afterwards:
 
-What it does:
+- **opencode:** restart it (skills load at startup), then check `/skills`
+- **Claude Code:** nothing to restart, check `/skills` right away
 
-- Symlinks every `skills/*` folder into `~/.claude/skills/`
-- **opencode:** restart opencode (skills load at startup)
-- **Claude Code:** picks skills up live, no restart needed
-
-Verify with opencode's `/skills` or Claude Code's `/skills` — you should see
-`klean` and `moodle-sec-audit` listed.
-
-> Want it installed somewhere else? Set `AGENT_SKILLS_DIR`:
-> `AGENT_SKILLS_DIR=~/.agent-skills curl -fsSL <url> | bash`
-
-### Alternative: clone & run
+**Already cloned this repo:**
 
 ```bash
 git clone git@github.com:Vamanakhil/agent-skills.git
@@ -64,42 +55,85 @@ cd agent-skills
 ./install.sh
 ```
 
-### Installer options
-
 ```bash
-./install.sh --list      # show skills that would be installed
+./install.sh --list      # show what would be installed
 ./install.sh --dry-run   # preview without changing anything
 ./install.sh --verbose   # print each link as it is created
+./uninstall.sh           # remove only the symlinks pointing here
 ```
 
-### Uninstall
+### Which installer is which
 
-```bash
-./uninstall.sh
+- `install.sh` — links every `skills/*` folder into `~/.claude/skills/`. Run
+  this when you already have the repo checked out.
+- `install-remote.sh` — for a fresh machine. Downloads the repo, then calls
+  `install.sh`. This is what the one-liner above runs.
+- `uninstall.sh` — removes only symlinks pointing back into this checkout.
+  Your other skills are left alone.
+
+## Use
+
+Once installed, just ask in any project:
+
+```text
+audit my moodle plugin at ./local_myplugin
 ```
 
-Removes only symlinks pointing back into this repo — never touches the source
-or your other skills.
+```text
+review this site with klean, LAUNCH mode
+```
+
+The agent matches your words against each skill's description and loads the
+right one.
 
 ## Add a skill
 
-1. Copy the scaffold: `cp -r template skills/my-skill`
-2. Edit `skills/my-skill/SKILL.md`
-   - `name` (lowercase, hyphen-separated) **must match the folder name**
-   - `description` should front-load the trigger keywords (e.g. "Use when ...")
-3. Run `bash scripts/validate.sh` — this runs in CI too, so keep it green
-4. `./install.sh` and commit
+`template/` is a starter scaffold — copy it so the new skill matches the spec
+from the first line:
+
+```bash
+cp -r template skills/my-skill
+```
+
+Then edit `skills/my-skill/SKILL.md`:
+
+- `name` must equal the folder name, lowercase with hyphens (`my-skill`)
+- `description` should say when to use it, with the words you'd actually type
+
+Then check and install:
+
+```bash
+bash scripts/validate.sh
+./install.sh
+```
 
 ## Validation
 
-`scripts/validate.sh` checks every skill:
+`scripts/validate.sh` checks every skill in `skills/`:
 
-- `SKILL.md` exists in each `skills/*/` folder
+- a `SKILL.md` exists in each skill folder
 - frontmatter `name` matches the folder name
-- `name` matches `^[a-z0-9]+(-[a-z0-9]+)*$` (the Agent Skills spec)
-- a trigger-forward `description` is present
+- `name` fits `^[a-z0-9]+(-[a-z0-9]+)*$`
+- a `description` is present so agents can find it
 
-Runs automatically on GitHub Actions and GitLab CI.
+It runs on GitHub Actions for every push and pull request. Keep it green.
+
+## Layout
+
+```text
+agent-skills/
+├── README.md / LICENSE / CHANGELOG.md
+├── install.sh / install-remote.sh / uninstall.sh
+├── skills/            # the skills (klean, moodle-sec-audit, …)
+├── template/          # starter scaffold for a new skill
+├── scripts/           # validate.sh (also runs in CI)
+└── .github/workflows/ # CI: validate on push + PR
+```
+
+## Changelog
+
+See [CHANGELOG.md](CHANGELOG.md). Notable changes land under `Unreleased`
+until cut into a tagged release.
 
 ## License
 
@@ -107,8 +141,7 @@ Runs automatically on GitHub Actions and GitLab CI.
 
 ## Roadmap
 
+- [x] `moodle-sec-audit` — Moodle plugin security audit + VAPT
 - [ ] More skills (git-workflow, code-review, release-notes, testing)
-- [x] `moodle-sec-audit` — Moodle plugin security audit + VAPT (M001–M015, OWASP 2025)
-- [ ] Versioned releases + changelog automation
-- [ ] `skills.urls` hosting for remote loading in opencode
-- [ ] Claude Code plugin packaging (`/plugin` installable)
+- [ ] Tagged releases (`v1.x`) once the skill set settles
+- [ ] Remote skill loading via opencode `skills.urls`
