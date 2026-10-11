@@ -31,6 +31,7 @@ opencode and Claude Code load globally — on every project.
 | Skill | Description |
 |---|---|
 | [klean](skills/klean/SKILL.md) | **Website Quality Engineer.** Review, design, and production-harden websites so they feel intentional, product-specific, accessible, fast, trustworthy, and secure — not statistically generic AI-generated UI. |
+| [moodle-plugin-sec-audit](skills/moodle-plugin-sec-audit/SKILL.md) | **Moodle Plugin Security Audit + VAPT.** Senior-tester audit of Moodle plugins against M001–M015 and OWASP Top 10 2025, with evidence-backed report and prod-ready fixes. |
 
 ## Install
 
@@ -50,7 +51,7 @@ What it does:
 - **Claude Code:** picks skills up live, no restart needed
 
 Verify with opencode's `/skills` or Claude Code's `/skills` — you should see
-`klean` listed.
+`klean` and `moodle-plugin-sec-audit` listed.
 
 > Want it installed somewhere else? Set `AGENT_SKILLS_DIR`:
 > `AGENT_SKILLS_DIR=~/.agent-skills curl -fsSL <url> | bash`
@@ -107,6 +108,7 @@ Runs automatically on GitHub Actions and GitLab CI.
 ## Roadmap
 
 - [ ] More skills (git-workflow, code-review, release-notes, testing)
+- [x] `moodle-plugin-sec-audit` — Moodle plugin security audit + VAPT (M001–M015, OWASP 2025)
 - [ ] Versioned releases + changelog automation
 - [ ] `skills.urls` hosting for remote loading in opencode
 - [ ] Claude Code plugin packaging (`/plugin` installable)
